@@ -1,0 +1,55 @@
+This Works:
+appletviewer -J-Djava.security.policy=policy localApplet.html
+
+-- Notes ---
+
+save as page to start:
+http://www.cs.unc.edu/~geom/LIGHTNING/applet/index.html
+
+edit a copy of html:
+localApplet.html
+
+-Getting Applet:
+
+wget http://www.cs.unc.edu/~geom/LIGHTNING/applet/LightningDemo.class
+wget http://www.cs.unc.edu/~geom/LIGHTNING/applet/BackBuffer.class
+wget http://www.cs.unc.edu/~geom/LIGHTNING/applet/Lightning.class
+wget http://www.cs.unc.edu/~geom/LIGHTNING/applet/DAGNode.class
+
+wget http://www.cs.unc.edu/~geom/LIGHTNING/applet/<Missing>.class
+
+
+Decompile with jad: jadls158.zip
+mkdir jad_out
+./jad -o -d jad_out -s java *.class
+cd jad_out
+javac *.java
+
+from recompiling found other missing classes:
+
+wget http://www.cs.unc.edu/~geom/LIGHTNING/applet/APSF.class
+wget http://www.cs.unc.edu/~geom/LIGHTNING/applet/FFT.class
+wget http://www.cs.unc.edu/~geom/LIGHTNING/applet/Complex.class
+
+now:
+appletviewer localApplet.html
+
+also getImage for filtering:
+wget http://www.cs.unc.edu/~geom/LIGHTNING/applet/apsfShift.jpg
+
+after adding stack traces and recompiling, found:
+
+Exception in thread "AWT-EventQueue-1" java.security.AccessControlException: access denied (java.io.FilePermission /home/daniel/lightning/apsfShift.jpg read)
+        at java.security.AccessControlContext.checkPermission(AccessControlContext.java:264)
+
+so cannot read from local filesystem:
+
+so copied a ALL policy file from carousel:
+
+appletviewer -J-Djava.security.policy=policy recompiledApplet.html
+
+
+Bingo!
+
+To read the apsfShift filter: to P3 ascii readble ppm:
+convert -compress none apsfShift.jpg  coco.ppm
